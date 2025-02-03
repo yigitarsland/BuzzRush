@@ -5,12 +5,17 @@ import SearchBar from '../components/SearchBar';
 import shops from '../data/shops';
 import LocationSearch from '../components/LocationBar';
 
-
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <LocationSearch />
-      <SearchBar />
+      <View style={styles.locationSearchContainer}>
+        <LocationSearch />
+      </View>
+      
+      <View style={styles.searchBarContainer}>
+        <SearchBar />
+      </View>
+      
       <FlatList
         data={shops}
         keyExtractor={(item) => item.id}
@@ -29,4 +34,13 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   listContent: { paddingBottom: 20 },
+  locationSearchContainer: {
+    position: 'relative',
+    zIndex: 1,  // Makes LocationSearch appear above other elements
+  },
+  searchBarContainer: {
+    position: 'relative',
+    zIndex: 0,  // Ensures SearchBar appears below LocationSearch suggestions
+    //marginTop: 1, // Adjust as needed for spacing
+  },
 });
