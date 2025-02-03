@@ -59,22 +59,37 @@ const LocationSearch = () => {
 
   const handleSearchChange = async (text) => {
     setSearchQuery(text);
-    if (text) {
-      try {
-        const geocodeResults = await Location.geocodeAsync(text);
-        setSuggestions(geocodeResults);
-      } catch (error) {
+    if (text.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(text)}&addressdetails=1`
+      );
+      const data = await response.json();
+      
+      if (data.length > 0) {
+        setSuggestions(
+          data.map((item) => ({
+            lat: item.lat,
+            lon: item.lon,
+            display_name: item.display_name,
+          }))
+        );
+      } else {
         setSuggestions([]);
       }
-    } else {
+    } catch (error) {
       setSuggestions([]);
     }
   };
 
   const handleSuggestionSelect = (selectedAddress) => {
-    updateLocationFromCoords(selectedAddress);
-    setSearchQuery(`${selectedAddress.street}, ${selectedAddress.city}`);
+    setSearchQuery(selectedAddress.display_name);
     setSuggestions([]);
+    updateLocationFromCoords({ latitude: parseFloat(selectedAddress.lat), longitude: parseFloat(selectedAddress.lon) });
   };
 
   return (
@@ -98,7 +113,7 @@ const LocationSearch = () => {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
                   <TouchableOpacity onPress={() => handleSuggestionSelect(item)}>
-                    <Text style={styles.suggestionText}>{item.street}</Text>
+                    <Text style={styles.suggestionText}>{item.display_name}</Text>
                   </TouchableOpacity>
                 )}
                 style={styles.suggestionsList}
