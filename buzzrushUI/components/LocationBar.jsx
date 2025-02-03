@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, FlatList } from 'react-native';
 import * as Location from 'expo-location';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -8,6 +8,7 @@ const LocationSearch = () => {
   const [address, setAddress] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -43,14 +44,37 @@ const LocationSearch = () => {
         const firstResult = geocodeResults[0];
         updateLocationFromCoords(firstResult);
         setIsEditing(false);
+        setSuggestions([]); // Clear suggestions after selection
       } else {
         setErrorMsg('Address not found');
         setIsEditing(false);
+        setSuggestions([]);
       }
     } catch (error) {
       setErrorMsg('Error searching address');
       setIsEditing(false);
+      setSuggestions([]);
     }
+  };
+
+  const handleSearchChange = async (text) => {
+    setSearchQuery(text);
+    if (text) {
+      try {
+        const geocodeResults = await Location.geocodeAsync(text);
+        setSuggestions(geocodeResults);
+      } catch (error) {
+        setSuggestions([]);
+      }
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSuggestionSelect = (selectedAddress) => {
+    updateLocationFromCoords(selectedAddress);
+    setSearchQuery(`${selectedAddress.street}, ${selectedAddress.city}`);
+    setSuggestions([]);
   };
 
   return (
@@ -59,30 +83,36 @@ const LocationSearch = () => {
       
       <View style={styles.textContainer}>
         {isEditing ? (
-          <TextInput
-            style={styles.input}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            onSubmitEditing={handleUpdateLocation}
-            autoFocus
-            placeholder="Enter your address"
-          />
+          <>
+            <TextInput
+              style={styles.input}
+              value={searchQuery}
+              onChangeText={handleSearchChange}
+              onSubmitEditing={handleUpdateLocation}
+              autoFocus
+              placeholder="Enter your address"
+            />
+            {suggestions.length > 0 && (
+              <FlatList
+                data={suggestions}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity onPress={() => handleSuggestionSelect(item)}>
+                    <Text style={styles.suggestionText}>{item.street}</Text>
+                  </TouchableOpacity>
+                )}
+                style={styles.suggestionsList}
+              />
+            )}
+          </>
         ) : errorMsg ? (
           <Text style={styles.errorText}>{errorMsg}</Text>
         ) : address ? (
           <>
-            <Text 
-              style={styles.addressText} 
-              numberOfLines={1} 
-              ellipsizeMode="tail"
-            >
+            <Text style={styles.addressText} numberOfLines={1} ellipsizeMode="tail">
               {address.street}
             </Text>
-            <Text 
-              style={styles.cityText} 
-              numberOfLines={1} 
-              ellipsizeMode="tail"
-            >
+            <Text style={styles.cityText} numberOfLines={1} ellipsizeMode="tail">
               {address.cityRegion}
             </Text>
           </>
@@ -91,22 +121,21 @@ const LocationSearch = () => {
         )}
       </View>
 
-      <TouchableOpacity 
-  style={styles.searchButton}
-  onPress={() => {
-    if (isEditing) {
-      handleUpdateLocation();
-    } else {
-      setIsEditing(true);
-      if (address) {
-        setSearchQuery(''); // Clear the current text
-      }
-    }
-  }}
->
-  <MaterialIcons name="search" size={24} color="#000" />
-    </TouchableOpacity>
-
+      <TouchableOpacity
+        style={styles.searchButton}
+        onPress={() => {
+          if (isEditing) {
+            handleUpdateLocation();
+          } else {
+            setIsEditing(true);
+            if (address) {
+              setSearchQuery(''); // Clear the current text
+            }
+          }
+        }}
+      >
+        <MaterialIcons name="search" size={24} color="#000" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -158,6 +187,22 @@ const styles = StyleSheet.create({
     color: '#000',
     padding: 0,
     height: 40,
+  },
+  suggestionText: {
+    padding: 8,
+    fontSize: 16,
+    color: '#000',
+  },
+  suggestionsList: {
+    backgroundColor: 'white',
+    position: 'absolute',
+    top: 50,
+    left: 16,
+    right: 16,
+    maxHeight: 200,
+    borderRadius: 8,
+    borderColor: '#ccc',
+    borderWidth: 1,
   },
 });
 
