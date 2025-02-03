@@ -1,9 +1,11 @@
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { useContext } from 'react';
+import { useNavigation } from '@react-navigation/native';  // Import useNavigation
 import { CartContext } from '../context/CartContext';
 
 export default function CartScreen() {
   const { items, total, dispatch } = useContext(CartContext);
+  const navigation = useNavigation(); // Initialize navigation
 
   const handleAdjustQuantity = (item, action) => {
     if (action === 'increment') {
@@ -61,7 +63,7 @@ export default function CartScreen() {
             <Text style={styles.totalText}>Total: ${total.toFixed(2)}</Text>
             <TouchableOpacity
               style={styles.checkoutButton}
-              onPress={() => Alert.alert('Checkout', 'Proceed to payment screen')}
+              onPress={() => navigation.navigate('Checkout')} // Navigate to Checkout
             >
               <Text style={styles.checkoutText}>Checkout</Text>
             </TouchableOpacity>

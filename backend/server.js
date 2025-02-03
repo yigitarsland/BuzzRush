@@ -9,7 +9,7 @@ const orderRoutes = require('./routes/orders');
 const courierRoutes = require('./routes/couriers');
 const productsRoute = require('./routes/products');
 
-dotenv.config();
+require('dotenv').config();
 
 const app = express();
 
@@ -33,3 +33,6 @@ mongoose.connect(process.env.MONGO_URI)
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+const paymentsRoute = require('./routes/payments');
+app.use('/api/payments', paymentsRoute);

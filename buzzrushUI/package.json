@@ -15,6 +15,7 @@
     "@react-navigation/drawer": "^7.1.1",
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.1.1",
+    "@stripe/stripe-react-native": "^0.41.0",
     "expo": "~52.0.27",
     "expo-status-bar": "~2.0.1",
     "react": "18.3.1",
@@ -25,10 +26,15 @@
     "react-native-google-places-autocomplete": "^2.5.7",
     "react-native-reanimated": "^3.16.7",
     "react-native-safe-area-context": "^5.1.0",
+<<<<<<< HEAD
     "react-native-screens": "^4.6.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.13",
     "expo-location": "~18.0.5"
+=======
+    "react-native-screens": "^4.5.0",
+    "react-native-web": "~0.19.13"
+>>>>>>> e9a847b7 (Add checkout page and Stripe integration)
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

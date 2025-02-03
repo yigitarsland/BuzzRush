@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 import CartScreen from '../screens/CartScreen';
 import ShopDetailScreen from '../screens/ShopDetailScreen';
+import Checkout from '../screens/Checkout';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -18,6 +20,14 @@ const HomeStack = () => (
     />
   </Stack.Navigator>
 );
+
+const CartStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Cart" component={CartScreen} options={{ headerShown: false }} />
+    <Stack.Screen name="Checkout" component={Checkout} options={{ title: 'Checkout' }} />
+  </Stack.Navigator>
+);
+
 
 export default function AppNavigator() {
   return (
@@ -35,7 +45,7 @@ export default function AppNavigator() {
       })}
     >
       <Tab.Screen name="Home" component={HomeStack} />
-      <Tab.Screen name="Cart" component={CartScreen} />
+      <Tab.Screen name="Cart" component={CartStack} />
     </Tab.Navigator>
   );
 }
