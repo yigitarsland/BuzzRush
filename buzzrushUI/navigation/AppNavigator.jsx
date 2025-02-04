@@ -13,6 +13,9 @@ import { useNavigation } from '@react-navigation/native';
 import { DrawerActions } from '@react-navigation/native'; 
 import OrdersScreen from '../screens/OrdersScreen';
 import OrderDetails from '../components/OrderDetails';
+import { Linking } from 'react-native';
+import * as MailComposer from 'expo-mail-composer';
+import { Alert } from 'react-native';
 
 
 const Tab = createBottomTabNavigator();
@@ -99,24 +102,84 @@ const OrdersStack = ({ navigation }) => (
 function AppNavigator() {
   const navigation = useNavigation(); // Use the hook to get the navigation object
 
+  const handleHelpPress = async () => {
+    try {
+      const isAvailable = await MailComposer.isAvailableAsync();
+      
+      if (!isAvailable) {
+        Alert.alert(
+          'Email Not Available',
+          'Please set up an email account on your device'
+        );
+        return;
+      }
+
+      await MailComposer.composeAsync({
+        recipients: ['yigitarsland@icloud.com'],
+        subject: 'Help Request',
+      });
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        'Failed to open email client. Please try again later.'
+      );
+      console.error('MailComposer error:', error);
+    }
+  };
+
   return (
     <Drawer.Navigator
       screenOptions={{
-        headerShown: false, // Hide the top bar (header) for the drawer navigator
+        headerShown: false,
         headerLeft: () => (
           <Ionicons
             name="menu"
             size={30}
             color="black"
-            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())} // Toggle the drawer
-            style={{ marginLeft: 10 }} // Adjust the icon positioning
+            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+            style={{ marginLeft: 10 }}
           />
         ),
       }}
     >
-      <Drawer.Screen name="Home" component={HomeTabs} />
-      <Drawer.Screen name="Account" component={AccountScreen} options={{ headerShown: true }} />
-      <Drawer.Screen name="Orders" component={OrdersStack} options={{ headerShown: true }} />
+      <Drawer.Screen 
+        name="Home" 
+        component={HomeTabs} 
+        options={{
+          drawerIcon: () => <Ionicons name="home" size={22} color="black" />,
+        }}
+      />
+      <Drawer.Screen 
+        name="Account" 
+        component={AccountScreen} 
+        options={{
+          headerShown: true,
+          drawerIcon: () => <Ionicons name="person" size={22} color="black" />,
+        }} 
+      />
+      <Drawer.Screen 
+        name="Orders" 
+        component={OrdersStack} 
+        options={{
+          headerShown: true,
+          drawerIcon: () => <Ionicons name="cart" size={22} color="black" />,
+        }} 
+      />
+      <Drawer.Screen
+        name="Help"
+        component={HomeScreen} // No need for a screen component here
+        options={{
+          headerShown: true,
+          drawerLabel: 'Help',
+          drawerIcon: () => <Ionicons name="help-circle" size={22} color="black" />,
+        }}
+        listeners={({ navigation }) => ({
+          drawerItemPress: (e) => {
+            e.preventDefault();
+            handleHelpPress();
+          },
+        })}
+      />
     </Drawer.Navigator>
   );
 }
