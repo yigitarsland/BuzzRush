@@ -11,6 +11,8 @@ import Checkout from '../screens/Checkout';
 import AccountScreen  from '../screens/AccountScreen'
 import { useNavigation } from '@react-navigation/native'; 
 import { DrawerActions } from '@react-navigation/native'; 
+import OrdersScreen from '../screens/OrdersScreen';
+import OrderDetails from '../components/OrderDetails';
 
 
 const Tab = createBottomTabNavigator();
@@ -67,6 +69,33 @@ const CartStack = ({ navigation }) => (
   </Stack.Navigator>
 );
 
+const OrdersStack = ({ navigation }) => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Orders"
+      component={OrdersScreen}
+      options={{
+        headerShown: false,
+        title: 'Previous Orders',
+        headerLeft: () => (
+          <Ionicons
+            name="menu"
+            size={30}
+            color="black"
+            onPress={() => navigation.openDrawer()} // Opens the drawer
+            style={{ marginLeft: 10 }} // Adjust the icon positioning
+          />
+        ),
+      }}
+    />
+    <Stack.Screen
+      name="OrderDetails"
+      component={OrderDetails}
+      options={{ title: ' ' }}
+    />
+  </Stack.Navigator>
+);
+
 function AppNavigator() {
   const navigation = useNavigation(); // Use the hook to get the navigation object
 
@@ -87,6 +116,7 @@ function AppNavigator() {
     >
       <Drawer.Screen name="Home" component={HomeTabs} />
       <Drawer.Screen name="Account" component={AccountScreen} options={{ headerShown: true }} />
+      <Drawer.Screen name="Orders" component={OrdersStack} options={{ headerShown: true }} />
     </Drawer.Navigator>
   );
 }
