@@ -4,11 +4,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from 'react-native';
-
 import HomeScreen from '../screens/HomeScreen';
 import CartScreen from '../screens/CartScreen';
 import ShopDetailScreen from '../screens/ShopDetailScreen';
 import Checkout from '../screens/Checkout';
+import AccountScreen  from '../screens/AccountScreen'
+import { useNavigation } from '@react-navigation/native'; 
+import { DrawerActions } from '@react-navigation/native'; 
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -65,16 +68,29 @@ const CartStack = ({ navigation }) => (
 );
 
 function AppNavigator() {
+  const navigation = useNavigation(); // Use the hook to get the navigation object
+
   return (
     <Drawer.Navigator
       screenOptions={{
         headerShown: false, // Hide the top bar (header) for the drawer navigator
+        headerLeft: () => (
+          <Ionicons
+            name="menu"
+            size={30}
+            color="black"
+            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())} // Toggle the drawer
+            style={{ marginLeft: 10 }} // Adjust the icon positioning
+          />
+        ),
       }}
     >
       <Drawer.Screen name="Home" component={HomeTabs} />
+      <Drawer.Screen name="Account" component={AccountScreen} options={{ headerShown: true }} />
     </Drawer.Navigator>
   );
 }
+
 
 const HomeTabs = () => (
   <Tab.Navigator
