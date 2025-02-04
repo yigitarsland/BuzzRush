@@ -127,6 +127,13 @@ function AppNavigator() {
     }
   };
 
+  const handleSignOut = () => {
+    // Reset the app state here (you can reset any global state or async storage if needed)
+    Alert.alert('Signed Out', 'You have been signed out');
+    navigation.navigate('Home'); // Navigate back to the Home screen
+  };
+  
+
   return (
     <Drawer.Navigator
       screenOptions={{
@@ -180,7 +187,22 @@ function AppNavigator() {
           },
         })}
       />
+      <Drawer.Screen
+        name="Sign Out"
+        component={HomeScreen} // Placeholder, doesn't navigate to a new screen
+        options={{
+          drawerLabel: 'Sign Out',
+          drawerIcon: () => <Ionicons name="log-out" size={22} color="black" />,
+        }}
+        listeners={({ navigation }) => ({
+          drawerItemPress: (e) => {
+            e.preventDefault();
+            handleSignOut(); // Executes sign out action
+          },
+        })}
+      />
     </Drawer.Navigator>
+    
   );
 }
 
