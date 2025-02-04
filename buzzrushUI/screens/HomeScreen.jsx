@@ -33,10 +33,11 @@ export default function HomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  listContent: { paddingBottom: 20 },
+  listContent: { paddingBottom: 30 },
   locationSearchContainer: {
     position: 'relative',
     zIndex: 1,  // Makes LocationSearch appear above other elements
+    marginTop: -30
   },
   searchBarContainer: {
     position: 'relative',
